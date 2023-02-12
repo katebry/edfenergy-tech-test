@@ -1,4 +1,4 @@
-import {ApiBookResponse} from "../constants/types";
+import {ApiBookResponse} from "../constants";
 
 export const mockBookResponse: ApiBookResponse = {
     "data": [

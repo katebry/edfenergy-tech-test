@@ -1,20 +1,30 @@
-import {ApiBookResponse, ApiConfig, Book} from "../constants/types";
+import {ApiBookResponse, ApiConfig, FormattedBook, json, xml} from "../constants";
 import axios from "axios";
+import parser from "xml2json"
 
 export class BookService {
 
     async getBooksByAuthor(config: ApiConfig): Promise<ApiBookResponse> {
         const endpoint = `${config.url}${config.authorName}&limit=${config.limit}&format=${config.format}`
         const response = await axios(endpoint);
-        if (response.status === 200) {
-            this.formatResponse(response, config.format)
+        if (response.status === 200 && config.format === json) {
+            this.formatResponse(response)
+        }
+        if (response.status === 200 && config.format === xml) {
+            this.parseXml(response)
         }
         return response
     }
 
-    formatResponse(getBooksByAuthorResponse: ApiBookResponse, format: string): Book[] {
+    formatResponse(getBooksByAuthorResponse: ApiBookResponse): FormattedBook[] {
         return getBooksByAuthorResponse.data.map(({book, stock}) => {
             return {...book, ...stock}
         })
+    }
+
+    parseXml(xml: any): FormattedBook[] {
+        let parsedXml = parser.toJson(xml)
+        let parsedJson = JSON.parse(parsedXml)
+        return this.formatResponse(parsedJson.root)
     }
 }

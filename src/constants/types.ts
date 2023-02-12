@@ -23,12 +23,7 @@ type ApiConfig = {
     format: string;
 }
 
-type Format = {
-    json: string;
-    xml: string;
-}
-
-type Book = {
+type FormattedBook = {
     title: string;
     author: string;
     isbn: string;
@@ -36,4 +31,4 @@ type Book = {
     price: string;
 }
 
-export {BookResponse, ApiBookResponse, ApiConfig, Format, Book}
+export {BookResponse, ApiBookResponse, ApiConfig, FormattedBook}
