@@ -1,9 +1,13 @@
 type BookResponse = {
-    title: string;
-    author: string;
-    isbn: string;
-    quantity: string;
-    price: string;
+    book: {
+        title: string;
+        author: string;
+        isbn: string;
+    }
+    stock: {
+        quantity: string;
+        price: string;
+    }
 }
 
 type ApiBookResponse = {
@@ -19,4 +23,17 @@ type ApiConfig = {
     format: string;
 }
 
-export {BookResponse, ApiBookResponse, ApiConfig}
+type Format = {
+    json: string;
+    xml: string;
+}
+
+type Book = {
+    title: string;
+    author: string;
+    isbn: string;
+    quantity: string;
+    price: string;
+}
+
+export {BookResponse, ApiBookResponse, ApiConfig, Format, Book}
