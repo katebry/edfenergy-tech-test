@@ -100,7 +100,7 @@ describe('Book Service', () => {
             }
         ]
 
-        expect(bookService.parseXml(input)).toEqual(expectedRes)
+        expect(bookService.parseXml(input, 'xml')).toEqual(expectedRes)
     })
 
     test('ERROR = handleError: when an error code is fed in, an error object is returned', async () => {
