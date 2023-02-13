@@ -1,4 +1,4 @@
-import {mockBookResponse} from '../mocks/mockBookResponse'
+import {mockBookResponse, mockErrorBookResponse} from '../mocks/mockBookResponse'
 import {BookService} from "../service/BookService";
 import {ApiConfig} from "../constants";
 
@@ -102,4 +102,13 @@ describe('Book Service', () => {
 
         expect(bookService.parseXml(input)).toEqual(expectedRes)
     })
+
+    test('ERROR = handleError: when an error code is fed in, an error object is returned', async () => {
+        const bookService = new BookService();
+
+        const expectedRes = {status: 500, message: 'Request failed, returned status of  500'}
+
+        expect(bookService.handleError(mockErrorBookResponse)).toEqual(expectedRes)
+
+    });
 });

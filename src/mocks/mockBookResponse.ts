@@ -27,3 +27,8 @@ export const mockBookResponse: ApiBookResponse = {
     ],
     "status": 200
 };
+
+export const mockErrorBookResponse: ApiBookResponse = {
+    "data": [],
+    "status": 500
+};
