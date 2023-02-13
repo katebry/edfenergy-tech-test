@@ -4,6 +4,6 @@ const json = 'json'
 
 const xml = 'xml'
 
-const errorMessage = 'Request failed, returned status of '
+const errorMessage = 'Request failed, returned status of'
 
 export {url, json, xml, errorMessage}

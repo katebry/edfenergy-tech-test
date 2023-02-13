@@ -1,4 +1,8 @@
-# edfenergy-test-test
+# edfenergy-test-test 
+
+My response to the EDF Energy refactoring tech test 🔥.
+
+The task: 
 
 `BookSearchApiClient` is a simple class that makes a call to a http API to retrieve a list of books and return them.
 

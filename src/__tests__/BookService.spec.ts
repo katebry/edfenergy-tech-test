@@ -106,9 +106,8 @@ describe('Book Service', () => {
     test('ERROR = handleError: when an error code is fed in, an error object is returned', async () => {
         const bookService = new BookService();
 
-        const expectedRes = {status: 500, message: 'Request failed, returned status of  500'}
+        const expectedRes = {status: 500, message: 'Request failed, returned status of 500'}
 
         expect(bookService.handleError(mockErrorBookResponse)).toEqual(expectedRes)
-
     });
 });

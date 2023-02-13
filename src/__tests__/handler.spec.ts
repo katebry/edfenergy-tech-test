@@ -43,7 +43,7 @@ describe('Handler - e2e flow', () => {
             format: 'json'
         }
 
-        const expectedFailRes = {status: 500, message: 'Request failed, returned status of  500'}
+        const expectedFailRes = {status: 500, message: 'Request failed, returned status of 500'}
 
         const client = new BookService();
         const booksByShakespeare = await client.getBooksByAuthor(mockConfig);
