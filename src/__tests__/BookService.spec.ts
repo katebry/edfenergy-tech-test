@@ -1,23 +1,7 @@
 import {mockBookResponse } from '../mocks/mockBookResponse'
 import {BookService} from "../service/BookService";
 import {ApiConfig, expectedJsonRes, expectedSuccessRes} from "../constants";
-
-class ApiError implements Error {
-    constructor(data, status) {
-        this.response = {
-            data, status
-        };
-        this.message = "";
-        this.name = "";
-    }
-
-    response: {
-        data: [];
-        status: number;
-    }
-    message: string;
-    name: string;
-}
+import {ApiError} from "../constants/ApiError";
 
 describe('Book Service', () => {
 
@@ -70,7 +54,7 @@ describe('Book Service', () => {
         expect(bookService.formatResponse(mockBookResponse)).toEqual(expectedSuccessRes);
     })
 
-    test('FORMAT = if status is 200 & format is xml, the authors books are returned as an array', () => {
+    test('FORMAT = if status is 200 & format is xml, the authors books are returned as a json', () => {
         const bookService = new BookService();
 
         const input = '<?xml version="1.0" encoding="UTF-8" ?>\n' +
