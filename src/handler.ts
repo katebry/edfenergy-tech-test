@@ -10,7 +10,7 @@ const config: ApiConfig = {
     format: 'json'
 }
 
-export const handler = async ():Promise<void> => {
+export const handler = async (): Promise<void> => {
     try {
         const booksByShakespeare = client.getBooksByAuthor(config);
     } catch (error) {

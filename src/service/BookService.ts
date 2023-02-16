@@ -1,21 +1,26 @@
-import {ApiBookResponse, ApiConfig, FormattedBook, xml, Error, errorMessage} from "../constants";
+import {ApiBookResponse, ApiConfig, FormattedBook, xml, errorMessage, BookError} from "../constants";
 import axios from "axios";
 import parser from "xml2json"
 
 export class BookService {
 
-    async getBooksByAuthor(config: ApiConfig): Promise<ApiBookResponse | Error> {
+    async retrieveBooksFromEndpoint(endpoint): Promise<ApiBookResponse> {
+        return axios(endpoint);
+    }
+
+    async getBooksByAuthor(config: ApiConfig): Promise<FormattedBook | BookError> {
         let formattedResponse;
-
+        let response;
         const endpoint = `${config.url}${config.authorName}&limit=${config.limit}&format=${config.format}`
-        const response = await axios(endpoint);
 
-        if (response.status !== 200) {
-            return this.handleError(response)
-        } else {
-            formattedResponse = this.parseXml(response, config.format)
-            return formattedResponse
+        try {
+            response = await this.retrieveBooksFromEndpoint(endpoint)
+        } catch (error: unknown) {
+            return this.handleError(error)
         }
+
+        formattedResponse = this.parseXml(response, config.format)
+        return formattedResponse
     }
 
     formatResponse(getBooksByAuthorResponse: ApiBookResponse): FormattedBook[] {
@@ -34,7 +39,7 @@ export class BookService {
         }
     }
 
-    handleError(error: ApiBookResponse): Error {
-        return {status: error.status, message: `${errorMessage} ${error.status}`}
+    handleError(error): BookError {
+        return {status: error.response.status, message: `${errorMessage} ${error.response.status}`}
     }
 }

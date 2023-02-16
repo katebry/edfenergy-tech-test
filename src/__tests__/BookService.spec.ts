@@ -1,10 +1,27 @@
-import {mockBookResponse, mockErrorBookResponse} from '../mocks/mockBookResponse'
+import {mockBookResponse } from '../mocks/mockBookResponse'
 import {BookService} from "../service/BookService";
-import {ApiConfig} from "../constants";
+import {ApiConfig, xml} from "../constants";
+
+class ApiError implements Error {
+    constructor(data, status) {
+        this.response = {
+            data, status
+        };
+        this.message = "";
+        this.name = "";
+    }
+
+    response: {
+        data: [];
+        status: number;
+    }
+    message: string;
+    name: string;
+}
 
 describe('Book Service', () => {
 
-    const mockConfig: ApiConfig = {
+    const testConfig: ApiConfig = {
         url: 'http://api.book-seller-example.com/by-author?q=',
         authorName: 'Shakespeare',
         limit: '10',
@@ -15,45 +32,79 @@ describe('Book Service', () => {
         jest.restoreAllMocks()
     })
 
-    test('GET = getBooksByAuthor: when the getBooksByAuthor endpoint is successfully hit, a 200 status code is returned', async () => {
-        const bookService = new BookService();
-
-        const mockedGet = jest
-            .spyOn(bookService, "getBooksByAuthor")
-            .mockImplementation(() => Promise.resolve(mockBookResponse));
-
-        const getBooksByAuthorResponse = bookService.getBooksByAuthor(mockConfig);
-
-        expect(mockedGet).toHaveBeenCalled();
-        expect(mockedGet).toHaveBeenCalledWith(mockConfig)
-        const data = await getBooksByAuthorResponse
-        expect(data.status).toBe(200)
-    });
-
-    test('FORMAT = if status is 200 & format is json, the authors books are returned as an array',  () => {
+    test('GET = getBooksByAuthor: when the getBooksByAuthor endpoint is successfully hit, formatted data is returned', async () => {
         const bookService = new BookService();
 
         const expectedRes = [
-                {
-                    "title": "Macbeth",
-                    "author": "William Shakespeare",
-                    "isbn": "123456789",
-                    "quantity": "2",
-                    "price": "9.99"
-                },
-                {
-                    "title": "Richard II",
-                    "author": "William Shakespeare",
-                    "isbn": "123456780",
-                    "quantity": "9",
-                    "price": "11.99"
-                }
-            ]
+            {
+                "title": "Macbeth",
+                "author": "William Shakespeare",
+                "isbn": "123456789",
+                "quantity": "2",
+                "price": "9.99"
+            },
+            {
+                "title": "Richard II",
+                "author": "William Shakespeare",
+                "isbn": "123456780",
+                "quantity": "9",
+                "price": "11.99"
+            }
+        ]
+
+        const mockedGet = jest
+            .spyOn(bookService, "retrieveBooksFromEndpoint")
+            .mockImplementation(() => Promise.resolve(mockBookResponse));
+
+        const getBooksByAuthorResponse = bookService.getBooksByAuthor(testConfig);
+
+        expect(mockedGet).toHaveBeenCalled();
+        const data = await getBooksByAuthorResponse
+        expect(data).toEqual(expectedRes)
+    });
+
+    test('GET = getBooksByAuthor: when the getBooksByAuthor endpoint is NOT successfully hit, an error is returned', async () => {
+        const bookService = new BookService();
+
+        const expectedRes = {status: 500, message: 'Request failed, returned status of 500'}
+
+        const mockedGet = jest
+            .spyOn(bookService, "retrieveBooksFromEndpoint")
+            .mockImplementation(() => {
+                throw new ApiError([], 500)
+            });
+
+        const getBooksByAuthorResponse = bookService.getBooksByAuthor(testConfig);
+
+        expect(mockedGet).toHaveBeenCalled();
+        const data = await getBooksByAuthorResponse
+        expect(data).toEqual(expectedRes)
+    });
+
+    test('FORMAT = if status is 200 & format is json, the authors books are returned as an array', () => {
+        const bookService = new BookService();
+
+        const expectedRes = [
+            {
+                "title": "Macbeth",
+                "author": "William Shakespeare",
+                "isbn": "123456789",
+                "quantity": "2",
+                "price": "9.99"
+            },
+            {
+                "title": "Richard II",
+                "author": "William Shakespeare",
+                "isbn": "123456780",
+                "quantity": "9",
+                "price": "11.99"
+            }
+        ]
 
         expect(bookService.formatResponse(mockBookResponse)).toEqual(expectedRes)
     })
 
-    test('FORMAT = if status is 200 & format is xml, the authors books are returned as an array',  () => {
+    test('FORMAT = if status is 200 & format is xml, the authors books are returned as an array', () => {
         const bookService = new BookService();
 
         const input = '<?xml version="1.0" encoding="UTF-8" ?>\n' +
@@ -102,12 +153,4 @@ describe('Book Service', () => {
 
         expect(bookService.parseXml(input, 'xml')).toEqual(expectedRes)
     })
-
-    test('ERROR = handleError: when an error code is fed in, an error object is returned', async () => {
-        const bookService = new BookService();
-
-        const expectedRes = {status: 500, message: 'Request failed, returned status of 500'}
-
-        expect(bookService.handleError(mockErrorBookResponse)).toEqual(expectedRes)
-    });
 });

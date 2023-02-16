@@ -31,9 +31,10 @@ type FormattedBook = {
     price: string;
 }
 
-type Error = {
-    status: number;
+type BookError = {
     message: string;
+    status: number;
 }
 
-export {BookResponse, ApiBookResponse, ApiConfig, FormattedBook, Error}
+
+export {BookResponse, ApiBookResponse, ApiConfig, FormattedBook, BookError}
