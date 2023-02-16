@@ -1,6 +1,6 @@
 import {ApiBookResponse, ApiConfig, FormattedBook, xml, errorMessage, BookError} from "../constants";
 import axios from "axios";
-import parser from "xml2json"
+import parser from "xml2json";
 
 export class BookService {
 
@@ -8,35 +8,32 @@ export class BookService {
         return axios(endpoint);
     }
 
-    async getBooksByAuthor(config: ApiConfig): Promise<FormattedBook | BookError> {
-        let formattedResponse;
+    async getBooksByAuthor(config: ApiConfig): Promise<FormattedBook[] | BookError> {
         let response;
-        const endpoint = `${config.url}${config.authorName}&limit=${config.limit}&format=${config.format}`
+        const endpoint = `${config.url}${config.authorName}&limit=${config.limit}&format=${config.format}`;
 
         try {
-            response = await this.retrieveBooksFromEndpoint(endpoint)
+            response = await this.retrieveBooksFromEndpoint(endpoint);
         } catch (error: unknown) {
-            return this.handleError(error)
+            return this.handleError(error);
         }
 
-        formattedResponse = this.parseXml(response, config.format)
-        return formattedResponse
+        if (config.format === xml) {
+            response = this.parseXml(response);
+        }
+        return this.formatResponse(response);
     }
 
     formatResponse(getBooksByAuthorResponse: ApiBookResponse): FormattedBook[] {
         return getBooksByAuthorResponse.data.map(({book, stock}) => {
-            return {...book, ...stock}
+            return {...book, ...stock};
         })
     }
 
-    parseXml(input: any, format: string): FormattedBook[] {
-        if (format === xml) {
-            let parsedXml = parser.toJson(input)
-            let parsedJson = JSON.parse(parsedXml)
-            return this.formatResponse(parsedJson.root)
-        } else {
-            return this.formatResponse(input)
-        }
+    parseXml(input: any): ApiBookResponse {
+        let parsedXml = parser.toJson(input);
+        const parsedJson = JSON.parse(parsedXml);
+        return parsedJson.root;
     }
 
     handleError(error): BookError {

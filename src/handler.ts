@@ -14,6 +14,6 @@ export const handler = async (): Promise<void> => {
     try {
         const booksByShakespeare = client.getBooksByAuthor(config);
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }

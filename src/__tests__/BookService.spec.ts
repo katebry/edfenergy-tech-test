@@ -1,6 +1,6 @@
 import {mockBookResponse } from '../mocks/mockBookResponse'
 import {BookService} from "../service/BookService";
-import {ApiConfig, xml} from "../constants";
+import {ApiConfig, expectedJsonRes, expectedSuccessRes} from "../constants";
 
 class ApiError implements Error {
     constructor(data, status) {
@@ -29,28 +29,11 @@ describe('Book Service', () => {
     }
 
     beforeEach(() => {
-        jest.restoreAllMocks()
+        jest.restoreAllMocks();
     })
 
     test('GET = getBooksByAuthor: when the getBooksByAuthor endpoint is successfully hit, formatted data is returned', async () => {
         const bookService = new BookService();
-
-        const expectedRes = [
-            {
-                "title": "Macbeth",
-                "author": "William Shakespeare",
-                "isbn": "123456789",
-                "quantity": "2",
-                "price": "9.99"
-            },
-            {
-                "title": "Richard II",
-                "author": "William Shakespeare",
-                "isbn": "123456780",
-                "quantity": "9",
-                "price": "11.99"
-            }
-        ]
 
         const mockedGet = jest
             .spyOn(bookService, "retrieveBooksFromEndpoint")
@@ -59,14 +42,14 @@ describe('Book Service', () => {
         const getBooksByAuthorResponse = bookService.getBooksByAuthor(testConfig);
 
         expect(mockedGet).toHaveBeenCalled();
-        const data = await getBooksByAuthorResponse
-        expect(data).toEqual(expectedRes)
+        const data = await getBooksByAuthorResponse;
+        expect(data).toEqual(expectedSuccessRes);
     });
 
     test('GET = getBooksByAuthor: when the getBooksByAuthor endpoint is NOT successfully hit, an error is returned', async () => {
         const bookService = new BookService();
 
-        const expectedRes = {status: 500, message: 'Request failed, returned status of 500'}
+        const expectedRes = {status: 500, message: 'Request failed, returned status of 500'};
 
         const mockedGet = jest
             .spyOn(bookService, "retrieveBooksFromEndpoint")
@@ -77,31 +60,14 @@ describe('Book Service', () => {
         const getBooksByAuthorResponse = bookService.getBooksByAuthor(testConfig);
 
         expect(mockedGet).toHaveBeenCalled();
-        const data = await getBooksByAuthorResponse
-        expect(data).toEqual(expectedRes)
+        const data = await getBooksByAuthorResponse;
+        expect(data).toEqual(expectedRes);
     });
 
     test('FORMAT = if status is 200 & format is json, the authors books are returned as an array', () => {
         const bookService = new BookService();
 
-        const expectedRes = [
-            {
-                "title": "Macbeth",
-                "author": "William Shakespeare",
-                "isbn": "123456789",
-                "quantity": "2",
-                "price": "9.99"
-            },
-            {
-                "title": "Richard II",
-                "author": "William Shakespeare",
-                "isbn": "123456780",
-                "quantity": "9",
-                "price": "11.99"
-            }
-        ]
-
-        expect(bookService.formatResponse(mockBookResponse)).toEqual(expectedRes)
+        expect(bookService.formatResponse(mockBookResponse)).toEqual(expectedSuccessRes);
     })
 
     test('FORMAT = if status is 200 & format is xml, the authors books are returned as an array', () => {
@@ -134,23 +100,6 @@ describe('Book Service', () => {
             '    <status>200</status>\n' +
             '</root>'
 
-        const expectedRes = [
-            {
-                "title": "Macbeth",
-                "author": "William Shakespeare",
-                "isbn": "123456789",
-                "quantity": "2",
-                "price": "9.99"
-            },
-            {
-                "title": "Richard II",
-                "author": "William Shakespeare",
-                "isbn": "123456780",
-                "quantity": "9",
-                "price": "11.99"
-            }
-        ]
-
-        expect(bookService.parseXml(input, 'xml')).toEqual(expectedRes)
+        expect(bookService.parseXml(input)).toEqual(expectedJsonRes);
     })
 });

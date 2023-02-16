@@ -12,7 +12,7 @@ type BookResponse = {
 
 type ApiBookResponse = {
     data: BookResponse[],
-    status: number
+    status: number;
 }
 
 type ApiConfig = {
@@ -35,6 +35,5 @@ type BookError = {
     message: string;
     status: number;
 }
-
 
 export {BookResponse, ApiBookResponse, ApiConfig, FormattedBook, BookError}
